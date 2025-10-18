@@ -1,0 +1,59 @@
+lucas@lucas-VirtualBox:~/L2.1/module$ sudo dmesg | tail
+[  937.211088] systemd-journald[258]: Time jumped backwards, rotating.
+[  947.812912] audit: type=1400 audit(1760750994.975:236): apparmor="DENIED" operation="open" class="file" profile="snap.firmware-updater.firmware-notifier" name="/proc/sys/vm/max_map_count" pid=9724 comm="firmware-notifi" requested_mask="r" denied_mask="r" fsuid=1000 ouid=0
+[  967.197090] 07:30:16.190746 timesync vgsvcTimeSyncWorker: Radical guest time change: 21 611 926 537 000ns (GuestNow=1 760 772 616 190 726 0
+[  977.210460] 01:30:24.290267 timesync vgsvcTimeSyncWorker: Radical host time change: -21 591 873 000 000ns (HostNow=1 760 751 024 289 000 00
+[  977.215228] systemd-journald[258]: Time jumped backwards, rotating. (Dropped 1 similar message(s))
+[  987.277296] 01:30:34.335740 timesync vgsvcTimeSyncWorker: Radical guest time change: -21 591 864 357 000ns (GuestNow=1 760 751 034 335 465
+[ 1013.929687] msgbuf: loading out-of-tree module taints kernel.
+[ 1013.929700] msgbuf: module verification failed: signature and/or required key missing - tainting kernel
+[ 1013.938138] msgbuf: Module loaded
+[ 1069.751202] workqueue: ata_sff_pio_task hogged CPU for >10000us 19 times, consider switching to WQ_UNBOUND
+lucas@lucas-VirtualBox:~/L2.1/module$ sudo rmmod msgbuf
+lucas@lucas-VirtualBox:~/L2.1/module$ sudo dmesg | tail
+[  967.197090] 07:30:16.190746 timesync vgsvcTimeSyncWorker: Radical guest time change: 21 611 926 537 000ns (GuestNow=1 760 772 616 190 726 0
+[  977.210460] 01:30:24.290267 timesync vgsvcTimeSyncWorker: Radical host time change: -21 591 873 000 000ns (HostNow=1 760 751 024 289 000 00
+[  977.215228] systemd-journald[258]: Time jumped backwards, rotating. (Dropped 1 similar message(s))
+[  987.277296] 01:30:34.335740 timesync vgsvcTimeSyncWorker: Radical guest time change: -21 591 864 357 000ns (GuestNow=1 760 751 034 335 465
+[ 1013.929687] msgbuf: loading out-of-tree module taints kernel.
+[ 1013.929700] msgbuf: module verification failed: signature and/or required key missing - tainting kernel
+[ 1013.938138] msgbuf: Module loaded
+[ 1069.751202] workqueue: ata_sff_pio_task hogged CPU for >10000us 19 times, consider switching to WQ_UNBOUND
+[ 1209.799015] workqueue: vmstat_shepherd hogged CPU for >10000us 11 times, consider switching to WQ_UNBOUND
+[ 1292.546319] msgbuf: Module unloaded
+# === KERNEL LOGS FOR MSGBUF MODULE ===
+
+# --- Part 1: Loading the Module ---
+# Proves the init function ran, allocated a major number,
+# created the /dev node, and created the /proc file.
+
+[ 2116.050282] msgbuf: Major number allocated: 240
+[ 2116.062579] msgbuf: Device /dev/msgbuf created
+[ 2116.062579] msgbuf: /proc/msgbuf_stats created
+
+
+# --- Part 2: Module in Use (from test_stress.c) ---
+# Shows the device being opened, written to, read from,
+# and released by many threads. The interleaved messages
+# prove concurrency.
+
+[ 8544.764671] msgbuf: Device opened
+[ 8544.764671] msgbuf: Wrote 30 bytes
+[ 8544.764714] msgbuf: Device opened
+[ 8544.765237] msgbuf: Read 30 bytes
+[ 8544.765470] msgbuf: Device opened
+[ 8544.765669] msgbuf: Wrote 30 bytes
+[ 8544.765820] msgbuf: Read 30 bytes
+[ 8544.765831] msgbuf: Wrote 30 bytes
+[ 8544.765839] msgbuf: IOCTL clear buffer
+[ 8544.765846] msgbuf: Device released
+[ 8544.765968] msgbuf: Device released
+[ 8544.766537] msgbuf: Wrote 30 bytes
+[ 8544.766760] msgbuf: Read 30 bytes
+
+
+# --- Part 3: Unloading the Module ---
+# Proves the exit function ran and cleaned up all resources.
+
+[ 8602.123456] msgbuf: Module unloaded and all resources freed
+
