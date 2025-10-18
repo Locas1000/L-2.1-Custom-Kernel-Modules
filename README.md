@@ -1,6 +1,6 @@
 
 # Homework 5: Custom Kernel Module (msgbuf)
-Demo Video: https://drive.google.com/file/d/1QiDtLHc92UTiry-FdxHoGhqQU90DicNp/view?usp=sharing 
+Demo Video: https://drive.google.com/file/d/1QiDtLHc92UTiry-FdxHoGhqQU90DicNp/view?usp=sharing.
 This project is a Linux Loadable Kernel Module (LKM) that implements a simple, thread-safe character device driver. The device, `/dev/msgbuf`, acts as a simple message buffer that can be written to and read from by user-space programs.
 
 ## Features
